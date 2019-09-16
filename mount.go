@@ -28,6 +28,7 @@ import (
 const (
 	type9pFs       = "9p"
 	typeVirtioFS   = "virtio_fs"
+	typeOverlayFS  = "overlay"
 	typeRootfs     = "rootfs"
 	typeTmpFs      = "tmpfs"
 	procMountStats = "/proc/self/mountstats"
@@ -104,7 +105,7 @@ func mount(source, destination, fsType string, flags int, options string) error 
 
 	var err error
 	switch fsType {
-	case type9pFs, typeVirtioFS:
+	case type9pFs, typeVirtioFS, typeOverlayFS:
 		if err = createDestinationDir(destination); err != nil {
 			return err
 		}
@@ -211,6 +212,7 @@ type storageHandler func(ctx context.Context, storage pb.Storage, s *sandbox) (s
 var storageHandlerList = map[string]storageHandler{
 	driver9pType:        virtio9pStorageHandler,
 	driverVirtioFSType:  virtioFSStorageHandler,
+	driverOverlayFSType: overlayFSStorageHandler,
 	driverBlkType:       virtioBlkStorageHandler,
 	driverBlkCCWType:    virtioBlkCCWStorageHandler,
 	driverMmioBlkType:   virtioMmioBlkStorageHandler,
@@ -290,6 +292,11 @@ func virtioBlkCCWStorageHandler(ctx context.Context, storage pb.Storage, s *sand
 
 // virtioFSStorageHandler handles the storage for virtio-fs.
 func virtioFSStorageHandler(_ context.Context, storage pb.Storage, s *sandbox) (string, error) {
+	return commonStorageHandler(storage)
+}
+
+// overlayFSStorageHandler handles the storage for overlayfs.
+func overlayFSStorageHandler(_ context.Context, storage pb.Storage, s *sandbox) (string, error) {
 	return commonStorageHandler(storage)
 }
 

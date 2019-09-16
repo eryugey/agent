@@ -27,6 +27,7 @@ import (
 const (
 	driver9pType        = "9p"
 	driverVirtioFSType  = "virtio-fs"
+	driverOverlayFSType = "overlay"
 	driverBlkType       = "blk"
 	driverBlkCCWType    = "blk-ccw"
 	driverMmioBlkType   = "mmioblk"
